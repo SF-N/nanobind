@@ -128,6 +128,10 @@ struct type_caster<T, enable_if_t<std::is_arithmetic_v<T> && !is_std_char_v<T>>>
         if constexpr (std::is_floating_point_v<T>) {
             if constexpr (sizeof(T) == 8)
                 return detail::load_f64(src.ptr(), flags, &value);
+#if defined(__STDCPP_FLOAT16_T__)
+            else if constexpr (sizeof(T) == 2)
+                return detail::load_f16(src.ptr(), flags, &value);
+#endif
             else
                 return detail::load_f32(src.ptr(), flags, &value);
         } else {
