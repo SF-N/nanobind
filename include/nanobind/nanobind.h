@@ -28,7 +28,7 @@
 
 // Core C++ headers that nanobind depends on
 #include <cstdint>
-#if defined(__STDCPP_FLOAT16_T__)
+#if defined(__STDCPP_FLOAT16_T__) || defined(__STDCPP_BFLOAT16_T__)
 #include <stdfloat>
 #endif
 #include <exception>

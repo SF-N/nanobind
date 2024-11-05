@@ -979,6 +979,34 @@ bool load_f16(PyObject *o, uint8_t flags, std::float16_t *out) noexcept {
 }
 #endif
 
+#if defined(__STDCPP_BFLOAT16_T__)
+bool load_bf16(PyObject *o, uint8_t flags, std::bfloat16_t *out) noexcept {
+    bool is_float = PyFloat_CheckExact(o);
+
+#if !defined(Py_LIMITED_API)
+    if (NB_LIKELY(is_float)) {
+        *out = (std::bfloat16_t) PyFloat_AS_DOUBLE(o);
+        return true;
+    }
+
+    is_float = false;
+#endif
+
+    if (is_float || (flags & (uint8_t) cast_flags::convert)) {
+        double result = PyFloat_AsDouble(o);
+
+        if (result != -1.0 || !PyErr_Occurred()) {
+            *out = (std::bfloat16_t) result;
+            return true;
+        } else {
+            PyErr_Clear();
+        }
+    }
+
+    return false;
+}
+#endif
+
 #if !defined(Py_LIMITED_API) && !defined(PYPY_VERSION) && PY_VERSION_HEX < 0x030c0000
 // Direct access for compact integers. These functions are
 // available as part of Python starting with version 3.12b1+

@@ -105,6 +105,14 @@ template <typename T> struct ndarray_traits {
     static constexpr bool is_signed  = std::is_signed_v<T>;
 };
 
+template <> struct ndarray_traits<std::bfloat16_t> {
+    static constexpr bool is_complex = false;
+    static constexpr bool is_float   = true;
+    static constexpr bool is_bool    = false;
+    static constexpr bool is_int     = false;
+    static constexpr bool is_signed  = true;
+};
+
 NAMESPACE_BEGIN(detail)
 
 template <typename T, typename /* SFINAE */ = int> struct dtype_traits {
@@ -131,6 +139,16 @@ template <typename T, typename /* SFINAE */ = int> struct dtype_traits {
         const_name<traits::is_float>("float", "") +
         const_name<traits::is_bool>(const_name("bool"), const_name<sizeof(T) * 8>());
 };
+
+template <> struct dtype_traits<std::bfloat16_t> {
+    static constexpr dlpack::dtype value {
+        (uint8_t) dlpack::dtype_code::Bfloat, // type code
+        16, // size in bits
+        1   // lanes (simd), usually set to 1
+    };
+    static constexpr auto name = const_name("bfloat16");
+};
+
 
 template <> struct dtype_traits<void> {
     static constexpr dlpack::dtype value{ 0, 0, 0 };

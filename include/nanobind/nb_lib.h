@@ -515,6 +515,9 @@ NB_CORE bool load_u64(PyObject *o, uint8_t flags, uint64_t *out) noexcept;
 #if defined(__STDCPP_FLOAT16_T__)
 NB_CORE bool load_f16(PyObject *o, uint8_t flags, std::float16_t *out) noexcept;
 #endif
+#if defined(__STDCPP_BFLOAT16_T__)
+NB_CORE bool load_bf16(PyObject *o, uint8_t flags, std::bfloat16_t *out) noexcept;
+#endif
 NB_CORE bool load_f32(PyObject *o, uint8_t flags, float *out) noexcept;
 NB_CORE bool load_f64(PyObject *o, uint8_t flags, double *out) noexcept;
 
