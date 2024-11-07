@@ -6,6 +6,7 @@
     All rights reserved. Use of this source code is governed by a
     BSD-style license that can be found in the LICENSE file.
 */
+#include <iostream>
 
 #define NB_TYPE_CASTER(Value_, descr)                                          \
     using Value = Value_;                                                      \
@@ -121,6 +122,30 @@ NB_INLINE uint8_t flags_for_local_caster(uint8_t flags) noexcept {
     }
     return flags;
 }
+
+// TODO(tehrengruber): cleanup and avoid duplication of ml_dtypes code if possible
+// see https://github.com/jax-ml/ml_dtypes/blob/9e49e5ca8e772b36f0f197dd7d596e4994daab9f/ml_dtypes/_src/custom_float.h#L82
+template <typename T>
+struct PyCustomFloat {
+  PyObject_HEAD;  // Python object header
+  T value;
+};
+
+template <> struct type_caster<std::bfloat16_t> {
+    bool from_python(handle src, uint8_t, cleanup_list *) noexcept {
+        PyObject* src_o = src.ptr();
+        value = reinterpret_cast<PyCustomFloat<std::bfloat16_t>*>(src_o)->value;
+        return true;
+    }
+
+    static handle from_cpp(std::bfloat16_t, rv_policy, cleanup_list *) noexcept {
+        std::cerr << "Not implemented" << std::endl;
+        throw "Not implemented";
+        return none().release();
+    }
+
+    NB_TYPE_CASTER(std::bfloat16_t, const_name("ml_dtypes.bfloat16"))
+};
 
 template <typename T>
 struct type_caster<T, enable_if_t<std::is_arithmetic_v<T> && !is_std_char_v<T>>> {
