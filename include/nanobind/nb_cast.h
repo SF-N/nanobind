@@ -6,7 +6,7 @@
     All rights reserved. Use of this source code is governed by a
     BSD-style license that can be found in the LICENSE file.
 */
-#include <iostream>
+//#include <iostream>
 
 #define NB_TYPE_CASTER(Value_, descr)                                          \
     using Value = Value_;                                                      \
@@ -139,7 +139,7 @@ template <> struct type_caster<std::bfloat16_t> {
     }
 
     static handle from_cpp(std::bfloat16_t, rv_policy, cleanup_list *) noexcept {
-        std::cerr << "Not implemented" << std::endl;
+//        std::cout << "Not implemented" << std::endl;
         throw "Not implemented";
         return none().release();
     }
